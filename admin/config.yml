@@ -1,0 +1,16 @@
+backend:
+  name: github
+  repo: 你的GitHub用户名/houda-blog
+  branch: main
+media_folder: "images"
+public_folder: "/images"
+collections:
+  - name: "blog"
+    label: "文章"
+    folder: "posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "日期", name: "date", widget: "datetime"}
+      - {label: "正文", name: "body", widget: "markdown"}
