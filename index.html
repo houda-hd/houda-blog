@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HOUDA Blog</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Marked.js -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #000000;
+      --card: rgba(17, 17, 17, 0.55);
+      --text: #e0e0e0;
+      --muted: rgba(255,255,255,0.55);
+      --border: rgba(255,255,255,0.06);
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    }
+
+    /* 背景流光 */
+    .bg-orb {
+      position: fixed;
+      border-radius: 9999px;
+      filter: blur(120px);
+      opacity: 0.08;
+      z-index: -1;
+      animation: float 12s ease-in-out infinite;
+    }
+
+    .orb-1 {
+      width: 320px;
+      height: 320px;
+      background: #ffffff;
+      top: -80px;
+      left: -100px;
+    }
+
+    .orb-2 {
+      width: 260px;
+      height: 260px;
+      background: #666666;
+      bottom: -60px;
+      right: -80px;
+      animation-delay: 2s;
+    }
+
+    @keyframes float {
+      0%,100% {
+        transform: translateY(0px) translateX(0px);
+      }
+      50% {
+        transform: translateY(-20px) translateX(10px);
+      }
+    }
+
+    /* 液态玻璃 */
+    .glass {
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    .card-hover {
+      transition:
+        transform 0.35s ease,
+        border-color 0.35s ease,
+        background 0.35s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .markdown {
+      line-height: 1.9;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .markdown h1,
+    .markdown h2,
+    .markdown h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .markdown h1 {
+      font-size: 2rem;
+    }
+
+    .markdown h2 {
+      font-size: 1.5rem;
+    }
+
+    .markdown p {
+      margin-bottom: 1rem;
+    }
+
+    .markdown code {
+      background: rgba(255,255,255,0.08);
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: 0.9em;
+    }
+
+    .markdown pre {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 1rem;
+      border-radius: 18px;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    .markdown blockquote {
+      border-left: 3px solid rgba(255,255,255,0.15);
+      padding-left: 1rem;
+      color: rgba(255,255,255,0.6);
+      margin: 1rem 0;
+    }
+
+    .markdown img {
+      border-radius: 20px;
+      margin: 1rem 0;
+    }
+
+    .loading-bar {
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-top-color: rgba(255,255,255,0.8);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.12);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+
+  <!-- 背景氛围 -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+
+  <!-- 顶部 -->
+  <header class="sticky top-0 z-40 border-b border-white/5 bg-black/40 backdrop-blur-2xl">
+    <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-semibold tracking-[0.2em] text-white">
+          HOUDA
+        </h1>
+        <p class="text-xs text-white/40 mt-1">
+          Liquid Glass Blog System
+        </p>
+      </div>
+
+      <div class="text-right">
+        <p class="text-sm text-white/50">
+          Powered by GitHub + Cloudflare Pages
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主体 -->
+  <main class="max-w-6xl mx-auto px-5 py-8">
+
+    <!-- Hero -->
+    <section class="mb-10">
+      <div class="glass rounded-[32px] p-8 md:p-12">
+        <div class="max-w-2xl">
+          <p class="text-white/40 uppercase tracking-[0.3em] text-xs mb-4">
+            HOUDA JOURNAL
+          </p>
+
+          <h2 class="text-4xl md:text-6xl font-semibold leading-tight text-white">
+            Notes drifting in a glass-dark ocean 🌑
+          </h2>
+
+          <p class="mt-6 text-white/55 leading-8">
+            Markdown 驱动 · GitHub 存储 · 无后端部署 · 移动端优先
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 文章区域 -->
+    <section>
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-medium text-white">
+          Latest Posts
+        </h3>
+
+        <p id="post-count" class="text-sm text-white/40">
+          Loading...
+        </p>
+      </div>
+
+      <!-- 卡片流 -->
+      <div
+        id="posts-container"
+        class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
+      >
+        <!-- JS 注入 -->
+      </div>
+
+      <!-- 加载 -->
+      <div
+        id="loading"
+        class="flex items-center justify-center py-20"
+      >
+        <div class="loading-bar"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Markdown 弹窗 -->
+  <div
+    id="modal"
+    class="fixed inset-0 bg-black/70 backdrop-blur-xl hidden z-50"
+  >
+    <div class="absolute inset-0" onclick="closeModal()"></div>
+
+    <div class="relative z-10 max-w-4xl mx-auto px-4 py-8 h-full overflow-y-auto">
+      <div class="glass rounded-[32px] p-6 md:p-10 relative">
+
+        <button
+          onclick="closeModal()"
+          class="absolute top-5 right-5 w-10 h-10 rounded-full border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 transition"
+        >
+          ✕
+        </button>
+
+        <div id="modal-content" class="markdown"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*
+    ==========================================================
+    🔧 需要修改的 GitHub 仓库信息
+    ==========================================================
+
+    请把下面两个变量替换成自己的 GitHub 信息：
+
+    GITHUB_USERNAME = GitHub 用户名
+    GITHUB_REPO     = 仓库名称
+
+    示例：
+    const GITHUB_USERNAME = "houda";
+    const GITHUB_REPO = "blog";
+
+    ==========================================================
+    */
+
+    const GITHUB_USERNAME = "YOUR_GITHUB_USERNAME";
+    const GITHUB_REPO = "YOUR_REPO_NAME";
+
+    /*
+    ==========================================================
+    posts/ 文件夹结构示例：
+
+    posts/
+      hello-world.md
+      first-post.md
+      diary.md
+
+    ==========================================================
+    */
+
+    const postsContainer = document.getElementById("posts-container");
+    const loading = document.getElementById("loading");
+    const postCount = document.getElementById("post-count");
+
+    async function loadPosts() {
+      try {
+
+        /*
+        ==========================================================
+        GitHub API:
+        自动读取 posts 文件夹中的所有 Markdown 文件
+        ==========================================================
+        */
+
+        const api = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/posts`;
+
+        const response = await fetch(api);
+
+        const files = await response.json();
+
+        const markdownFiles = files.filter(file =>
+          file.name.endsWith(".md")
+        );
+
+        postCount.innerText = `${markdownFiles.length} Posts`;
+
+        loading.style.display = "none";
+
+        if (markdownFiles.length === 0) {
+          postsContainer.innerHTML = `
+            <div class="glass rounded-[28px] p-8 col-span-full text-center">
+              <p class="text-white/50">
+                暂无文章 ✨
+              </p>
+            </div>
+          `;
+          return;
+        }
+
+        markdownFiles.reverse().forEach(file => {
+
+          const cleanTitle = file.name
+            .replace(".md", "")
+            .replace(/-/g, " ");
+
+          const card = document.createElement("div");
+
+          card.className =
+            "glass card-hover rounded-[28px] p-6 cursor-pointer";
+
+          card.innerHTML = `
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-xs tracking-[0.25em] uppercase text-white/30 mb-3">
+                  Markdown Post
+                </p>
+
+                <h4 class="text-2xl font-semibold text-white leading-tight">
+                  ${cleanTitle}
+                </h4>
+              </div>
+
+              <div class="text-white/25 text-xl">
+                ↗
+              </div>
+            </div>
+
+            <div class="mt-8 flex items-center justify-between">
+              <span class="text-sm text-white/35">
+                ${file.name}
+              </span>
+
+              <span class="text-sm text-white/40">
+                Open
+              </span>
+            </div>
+          `;
+
+          card.addEventListener("click", () => {
+            openPost(file.download_url);
+          });
+
+          postsContainer.appendChild(card);
+        });
+
+      } catch (err) {
+
+        loading.style.display = "none";
+
+        postsContainer.innerHTML = `
+          <div class="glass rounded-[28px] p-8 col-span-full">
+            <p class="text-red-300/80">
+              Failed to load posts.
+            </p>
+
+            <p class="text-white/35 mt-3 text-sm">
+              请检查 GitHub 仓库名、用户名、以及 posts 文件夹是否存在。
+            </p>
+          </div>
+        `;
+
+        console.error(err);
+      }
+    }
+
+    async function openPost(url) {
+
+      const modal = document.getElementById("modal");
+      const content = document.getElementById("modal-content");
+
+      modal.classList.remove("hidden");
+
+      content.innerHTML = `
+        <div class="flex items-center justify-center py-20">
+          <div class="loading-bar"></div>
+        </div>
+      `;
+
+      try {
+
+        const response = await fetch(url);
+        const markdown = await response.text();
+
+        /*
+        ==========================================================
+        marked.js Markdown 渲染
+        ==========================================================
+        */
+
+        content.innerHTML = marked.parse(markdown);
+
+      } catch (err) {
+
+        content.innerHTML = `
+          <p class="text-red-300">
+            Failed to load markdown file.
+          </p>
+        `;
+
+        console.error(err);
+      }
+    }
+
+    function closeModal() {
+      document.getElementById("modal").classList.add("hidden");
+    }
+
+    /*
+    ==========================================================
+    ESC 键关闭弹窗
+    ==========================================================
+    */
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    });
+
+    /*
+    ==========================================================
+    初始化
+    ==========================================================
+    */
+
+    loadPosts();
+
+  </script>
+
+  <!--
+  ==========================================================
+  Decap CMS 配置说明
+  ==========================================================
+
+  Cloudflare Pages 项目结构建议：
+
+  /
+    index.html
+    admin/
+      index.html
+      config.yml
+
+  ==========================================================
+  admin/index.html 内容：
+  ==========================================================
+
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <script src="https://unpkg.com/decap-cms@^3/dist/decap-cms.js"></script>
+  </head>
+  <body></body>
+  </html>
+
+  ==========================================================
+  admin/config.yml 示例：
+  ==========================================================
+
+  backend:
+    name: github
+    repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME
+    branch: main
+
+    # GitHub OAuth 外部鉴权
+    base_url: https://你的-oauth-服务域名
+    auth_endpoint: auth
+
+  media_folder: "uploads"
+  public_folder: "/uploads"
+
+  collections:
+    - name: "posts"
+      label: "Posts"
+      folder: "posts"
+      create: true
+      slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+
+      fields:
+        - { label: "Title", name: "title", widget: "string" }
+        - { label: "Body", name: "body", widget: "markdown" }
+
+  ==========================================================
+  GitHub OAuth 方案建议：
+  ==========================================================
+
+  推荐使用：
+  - Netlify OAuth
+  - Cloudflare Worker OAuth
+  - Decap Proxy Server
+
+  然后将：
+  blog.houda.com/admin
+
+  指向 admin/ 即可。
+
+  ==========================================================
+  -->
+</body>
+</html>
